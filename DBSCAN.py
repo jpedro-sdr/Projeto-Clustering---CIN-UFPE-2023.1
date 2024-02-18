@@ -1,7 +1,9 @@
 from sklearn.cluster import DBSCAN
+from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
+import numpy as np
 
-def dbscan(X, eps=0.3, min_samples=5):
+def apply_DBSCAN(X, eps, min_samples):
     dbscan = DBSCAN(eps=eps, min_samples=min_samples)
-    labels = dbscan.fit_predict(X)
-    
-    return labels
+    clusters = dbscan.fit_predict(X)
+    return clusters
