@@ -24,18 +24,8 @@ selected_columns = ['Fresh', 'Milk', 'Grocery', 'Frozen', 'Detergents_Paper', 'D
 X_selected = X[selected_columns]
 
 print(X_selected)
-# Tratamento de Outliers
-z_scores = np.abs(stats.zscore(X_selected))
-filtered_entries = (z_scores < 3).all(axis=1)
-X_selected = X_selected[filtered_entries]
 
-# Transformação de Dados
-X_selected = np.log1p(X_selected)
 original_index = X_selected.index
-
-# Seleção de Recursos
-selector = VarianceThreshold()
-X_selected = selector.fit_transform(X_selected)
 
 # Redução de Dimensionalidade
 pca = PCA(n_components=2)
@@ -45,12 +35,12 @@ X_selected = pca.fit_transform(X_selected)
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X_selected)
 
-# # Aplicando o KMeans
-# model = KMeans()
-# visualizer = KElbowVisualizer(model, k=(1,10))
+# Aplicando o KMeans
+model = KMeans()
+visualizer = KElbowVisualizer(model, k=(1,10))
 
-# visualizer.fit(X_scaled)  
-# visualizer.poof()    
+visualizer.fit(X_scaled)  
+visualizer.poof()    
 
 n_clusters = 4
 
@@ -65,8 +55,8 @@ def purity_score(y_true, y_pred):
     contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
     return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix) 
 
-purity = purity_score(original_index, kmeans_clusters_sklearn)
-print('Pureza para o cluster acima = ', purity)
+purity_kmeans_clusters_sklearn = purity_score(original_index, kmeans_clusters_sklearn)
+print('Pureza para o cluster acima = ', purity_kmeans_clusters_sklearn)
 
 # # Aplicando kMeans customizado
 kmeans_clusters_custom = kMeans_custom(X_scaled, n_clusters=n_clusters)
@@ -75,8 +65,8 @@ print(kmeans_clusters_custom)
 silhouette_kmeans_custom = silhouette_score(X_scaled, kmeans_clusters_custom)
 print(silhouette_kmeans_custom)
 
-purity = purity_score(original_index, kmeans_clusters_custom)
-print('Pureza para o cluster acima = ', purity)
+purity_kmeans_clusters_custom = purity_score(original_index, kmeans_clusters_custom)
+print('Pureza para o cluster acima = ', purity_kmeans_clusters_custom)
 
 # # Aplicando DBSCAN
 dbscan_clusters = apply_DBSCAN(X_scaled, eps=0.5, min_samples=5)
@@ -85,8 +75,8 @@ print(dbscan_clusters)
 silhouette_dbscan = silhouette_score(X_scaled, dbscan_clusters)
 print(silhouette_dbscan)
 
-purity = purity_score(original_index, dbscan_clusters)
-print('Pureza para o cluster acima = ', purity)
+purity_dbscan_clusters = purity_score(original_index, dbscan_clusters)
+print('Pureza para o cluster acima = ', purity_dbscan_clusters)
 
 # # Aplicando Fuzzy cMeans
 fuzzy_clusters = apply_fuzzy_cMeans(X_scaled, n_clusters=n_clusters, m=2)
@@ -95,42 +85,78 @@ print(fuzzy_clusters)
 silhouette_fuzzy = silhouette_score(X_scaled, fuzzy_clusters)
 print(silhouette_fuzzy)
 
-purity = purity_score(original_index, fuzzy_clusters)
-print('Pureza para o cluster acima = ', purity)
+purity_fuzzy_clusters = purity_score(original_index, fuzzy_clusters)
+print('Pureza para o cluster acima = ', purity_fuzzy_clusters)
 
 
 # Visualizando resultados graficamente
 
-# # Plotando kMeans usando sklearn
-# plt.figure(figsize=(12, 6))
-# plt.subplot(2, 3, 1)
-# plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=kmeans_clusters_sklearn, cmap='viridis')
-# plt.title('kMeans (sklearn)')
-# plt.xlabel('Feature 1')
-# plt.ylabel('Feature 2')
+# Plotando kMeans usando sklearn
+plt.figure(figsize=(8, 8))
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=kmeans_clusters_sklearn, cmap='viridis')
+plt.title('kMeans (sklearn)')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
 
-# # Plotando kMeans customizado
-# plt.subplot(2, 3, 2)
-# plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=kmeans_clusters_custom, cmap='viridis')
-# plt.title('kMeans (customizado)')
-# plt.xlabel('Feature 1')
-# plt.ylabel('Feature 2')
+# Plotando kMeans customizado
+plt.figure(figsize=(8, 8))
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=kmeans_clusters_custom, cmap='viridis')
+plt.title('kMeans (customizado)')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
 
-# # Plotando DBSCAN
-# plt.subplot(2, 3, 3)
-# plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=dbscan_clusters, cmap='viridis')
-# plt.title('DBSCAN')
-# plt.xlabel('Feature 1')
-# plt.ylabel('Feature 2')
+# Plotando DBSCAN
+plt.figure(figsize=(8, 8))
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=dbscan_clusters, cmap='viridis')
+plt.title('DBSCAN')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
 
-# # Plotando Fuzzy cMeans
-# plt.subplot(2, 3, 4)
-# plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=fuzzy_clusters, cmap='viridis')
-# plt.title('Fuzzy cMeans')
-# plt.xlabel('Feature 1')
-# plt.ylabel('Feature 2')
+# Plotando Fuzzy cMeans
+plt.figure(figsize=(8, 8))
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=fuzzy_clusters, cmap='viridis')
+plt.title('Fuzzy cMeans')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
 
-# # Adicione mais subplots conforme necessário para outras features
+# Lista de métodos de agrupamento
+algorithms = ['kMeans (sklearn)', 'kMeans (customizado)', 'DBSCAN', 'Fuzzy cMeans']
 
-# plt.tight_layout()
-# plt.show()
+# Lista de valores de silhueta correspondentes
+silhouette_values = [silhouette_kmeans_sklearn, silhouette_kmeans_custom, silhouette_dbscan, silhouette_fuzzy]
+
+# Criando o gráfico de barras
+plt.figure(figsize=(10, 6))
+plt.bar(algorithms, silhouette_values, color='skyblue')
+plt.title('Valores de Silhueta para Cada Agrupamento')
+plt.xlabel('Algoritmo de Agrupamento')
+plt.ylabel('Valor de Silhueta')
+plt.ylim(0, 1)  # Definindo o limite y para melhor visualização
+
+# Adicionando os valores de silhueta nas barras
+for i, value in enumerate(silhouette_values):
+    plt.text(i, value + 0.01, round(value, 3), ha='center', va='bottom')
+
+# Exibindo o gráfico
+plt.show()
+
+# Lista de métodos de agrupamento
+algorithms = ['kMeans (sklearn)', 'kMeans (customizado)', 'DBSCAN', 'Fuzzy cMeans']
+
+purity_values = [purity_kmeans_clusters_sklearn, purity_kmeans_clusters_custom, purity_dbscan_clusters, purity_fuzzy_clusters]
+
+plt.figure(figsize=(10, 6))
+plt.bar(algorithms, purity_values, color='orange')
+plt.title('Valores de Pureza para Cada Agrupamento')
+plt.xlabel('Algoritmo de Agrupamento')
+plt.ylabel('Valor de Pureza')
+plt.ylim(0, 0.01)  # Definindo o limite y para melhor visualização
+
+for i, value in enumerate(purity_values):
+    plt.text(i, value + 0.01, round(value, 3), ha='center', va='bottom')
+
+plt.show()
