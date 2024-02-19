@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from kMeans import kMeans_sklearn, kMeans_custom, elbow_method
+from kMeans import kMeans_sklearn, kMeans_custom
 from DBSCAN import apply_DBSCAN
 from fuzzy_cMeans import apply_fuzzy_cMeans
 from sklearn.preprocessing import StandardScaler
