@@ -5,9 +5,9 @@ from sklearn.metrics.pairwise import pairwise_distances_argmin_min
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
-def kMeans_sklearn(X, n_clusters):
+def kMeans_sklearn(X_scaled, n_clusters):
     kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-    clusters = kmeans.fit_predict(X)
+    clusters = kmeans.fit_predict(X_scaled)
     kmeans.cluster_centers_
     return clusters
 
